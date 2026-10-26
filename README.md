@@ -1,4 +1,4 @@
-# Sophisticated Backpacks / Core 闁?filter-slot transfer defect
+# Sophisticated Backpacks / Core — filter-slot transfer defect
 
 Server-side check, server-side fix, and a locally-restricted client probe for a source-slot
 validation defect in Sophisticated Backpacks / Sophisticated Core.
@@ -26,7 +26,7 @@ do {
 ```
 
 `quickMoveStack` has no `mayPickup()` call and does not reject `IFilterSlot`; the upgrade-settings
-branch merges the sample into real storage through `mergeItemStack` 闁?`Slot.set`. See
+branch merges the sample into real storage through `mergeItemStack` — `Slot.set`. See
 [`docs/defect-and-fix.md`](docs/defect-and-fix.md) for the annotated chain with pinned links.
 
 A stock client cannot reach it: both send sites in `StorageScreenBase` guard the slot
@@ -45,8 +45,8 @@ server does not re-validate.
 ## Build
 
 Needs JDK 21 (`JAVA_HOME`), and a classpath with Minecraft/NeoForge plus both mod jars.
-`compile-classpath.txt` holds one jar per line and is machine specific 闁?regenerate it for your
-setup (NeoGradle `neoFormRuntime` output, or the `libraries/` of a NeoForge server).
+`compile-classpath.example.txt` shows the layout: one jar path per line, pointing at your own NeoForge
+libraries and the two mod jars. Copy it to `compile-classpath.txt` (git-ignored) and fill in real paths.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1
@@ -59,18 +59,18 @@ charset and mangle non-ASCII paths.
 
 ## Usage
 
-**Check a server** 闁?drop `backpack-check-1.0.0.jar` into `mods/`, start once, read
+**Check a server** — drop `backpack-check-1.0.0.jar` into `mods/`, start once, read
 `[backpack-check]` in the log or `backpack-check/result-*.json`. It builds a throwaway backpack on
 a fake player, exercises the real handlers, then removes the throwaway storage. Add
 `-Dbackpack.check.exit=true` to shut down afterwards, and
 `-Dbackpack.check.item=minecraft:dirt` to probe with a different item.
 
-**Fix a server** 闁?drop `backpack-transfer-fix-1.0.0.jar` into `mods/` and restart. Server side
+**Fix a server** — drop `backpack-transfer-fix-1.0.0.jar` into `mods/` and restart. Server side
 only; clients do not need it. Normal storage, player-inventory and upgrade-item transfers are
 unchanged. The mixin targets two methods; if a future release renames them the server fails to
 start instead of silently losing the guard.
 
-**Reproduce locally** 闁?see [`docs/repro.md`](docs/repro.md). It runs a dedicated server on
+**Reproduce locally** — see [`docs/repro.md`](docs/repro.md). It runs a dedicated server on
 `127.0.0.1`, which is what the client probe permits.
 
 ## Observed results
@@ -82,12 +82,12 @@ Dedicated server, fake player, `minecraft:dirt` as probe item:
 | Backpacks + Core | +1 | +5 | 0 | unaffected |
 | + `backpack-transfer-fix` | 0 | 0 | 0 | unaffected |
 
-Packet path (real `ServerboundCustomPayloadPacket` 閳?`NetworkRegistry.handleModdedPayload`, dirt probe):
+Packet path (real `ServerboundCustomPayloadPacket` → `NetworkRegistry.handleModdedPayload`, dirt probe):
 
-| State | Storage before 閳?after | Verdict |
+| State | Storage before → after | Verdict |
 | --- | --- | --- |
-| Backpacks + Core | 0 閳?1 | DUPLICATED |
-| + `backpack-transfer-fix` | 0 閳?0 | BLOCKED |
+| Backpacks + Core | 0 → 1 | DUPLICATED |
+| + `backpack-transfer-fix` | 0 → 0 | BLOCKED |
 
 With a server-side recipe viewer (JEI in these runs) the same path can also create an item the
 player never owned, because the recipe-viewer ghost-slot message is registered and does not
@@ -99,14 +99,14 @@ Raw records: [`docs/evidence/`](docs/evidence).
 ## Limitations
 
 - The client probe was compiled but not executed here: this machine has no graphical environment
-  and only server-side mappings. The wire format was verified separately (a single int: `164` 闁?  `00 00 00 A4`).
+  and only server-side mappings. The wire format was verified separately (a single int: `164` — `00 00 00 A4`).
 - The fix stops new items from being created through this path. It does not remove items that
   already exist.
 - No claim is made about any particular player's conduct or about a specific production server.
 
 ## License
 
-MIT 闁?see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
 
 ## Version timeline (verified by running the published JARs)
 
