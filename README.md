@@ -81,6 +81,7 @@ Dedicated server, fake player, `minecraft:dirt` as probe item:
 | --- | ---: | ---: | ---: | ---: |
 | Backpacks + Core | +1 | +5 | 0 | unaffected |
 | + `backpack-transfer-fix` | 0 | 0 | 0 | unaffected |
+| patched upstream source (`1.21.x` + PR #518, built with Gradle) | 0 | 0 | 0 | unaffected |
 
 Packet path (real `ServerboundCustomPayloadPacket` → `NetworkRegistry.handleModdedPayload`, dirt probe):
 
