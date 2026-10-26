@@ -112,7 +112,7 @@ MIT — see [LICENSE](LICENSE).
 
 | Build | Ghost-slot message | Whole-slot transfer from a filter slot |
 | --- | --- | --- |
-| Core 1.4.18.1629 / Backpacks 3.25.36.1629 | writes any menu slot via a bare `Slot.set` 鈥?no filter check, no count check | present |
+| Core 1.4.18.1629 / Backpacks 3.25.36.1629 | writes any menu slot via a bare `Slot.set` — no filter check, no count check | present |
 | Core 1.5.18.2431 / Backpacks 3.26.15.2227 | routed through validated `setGhostSlot`; direct storage writes rejected | **still present** |
 
 Both rows were measured on a dedicated server with a dirt probe: the older build accepted a 64-item write into a storage slot
@@ -132,7 +132,7 @@ Confirmed by execution:
 
 Not claimed:
 
-- that an unmodified client can trigger it 鈥?it cannot; both send sites in `StorageScreenBase` guard the slot;
+- that an unmodified client can trigger it — it cannot; both send sites in `StorageScreenBase` guard the slot;
 - anything about a specific server, player, or the maintainer's intent.
 
 ## Reporting
