@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "backpack_transfer_fix"
+version = "1.0.0"
+displayName = "Backpack Filter-Slot Transfer Fix"
+description = "Rejects server-side whole-slot transfers whose source is a filter sample slot or an upgrade settings slot. Mitigates the Sophisticated Backpacks filter-slot item duplication / creation defect. Server-side only."
+
+[[mixins]]
+config = "backpack_transfer_fix.mixins.json"
+
+[[dependencies.backpack_transfer_fix]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.229,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.backpack_transfer_fix]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.backpack_transfer_fix]]
+modId = "sophisticatedcore"
+type = "required"
+versionRange = "[1.4.18,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.backpack_transfer_fix]]
+modId = "sophisticatedbackpacks"
+type = "required"
+versionRange = "[3.25.36,)"
+ordering = "AFTER"
+side = "BOTH"

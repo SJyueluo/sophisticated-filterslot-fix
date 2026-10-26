@@ -1,0 +1,207 @@
+package local.bpclient;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.IFilterSlot;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.StorageContainerMenuBase;
+import net.p3pp3rf1y.sophisticatedcore.network.TransferFullSlotPayload;
+
+/**
+ * Reproduction-only client probe for the filter-slot whole-slot-transfer defect.
+ *
+ * <p>Deliberately limited so it cannot be used as a cheat on someone else's server:
+ * <ul>
+ *   <li>refuses to act unless the session is single-player or a loopback address;</li>
+ *   <li>never takes a slot id from the user 閳?it only addresses filter slots that are currently
+ *       open in the menu;</li>
+ *   <li>does nothing unless the user presses the (unbound by default) key;</li>
+ *   <li>only reports what happened; it does not repeat, loop or script anything.</li>
+ * </ul>
+ * Intended use: reproduce and document the defect on your own machine.
+ */
+@Mod(value = BackpackClientDemo.MODID, dist = Dist.CLIENT)
+public final class BackpackClientDemo {
+    public static final String MODID = "backpack_client_demo";
+    private static final String CATEGORY = "Backpack Demo (local only)";
+
+    private static KeyMapping demoKey;
+    private static int pendingTicks = -1;
+    private static int pendingSlot = -1;
+    private static Item pendingItem;
+    private static int beforeStorage;
+    private static int beforeInventory;
+    private static String pendingAddress = "";
+    private static String refusal = "";
+
+    public BackpackClientDemo(IEventBus modEventBus) {
+        modEventBus.addListener(this::onRegisterKeys);
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
+    }
+
+    private void onRegisterKeys(RegisterKeyMappingsEvent event) {
+        demoKey = new KeyMapping("key.backpack_client_demo.send", -1, CATEGORY);
+        event.register(demoKey);
+    }
+
+    private void onClientTick(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (demoKey != null) {
+            while (demoKey.consumeClick()) {
+                attempt(minecraft);
+            }
+        }
+        if (pendingTicks > 0 && --pendingTicks == 0) {
+            report(minecraft);
+        }
+    }
+
+    // ------------------------------------------------------------------ send
+
+    private static void attempt(Minecraft minecraft) {
+        if (minecraft.player == null || minecraft.getConnection() == null) {
+            return;
+        }
+        if (!isLocalSession(minecraft)) {
+            message(minecraft, "鎼俢[backpack-demo] refused: this probe only runs in single-player or on a loopback address.");
+            return;
+        }
+        if (!(minecraft.player.containerMenu instanceof StorageContainerMenuBase<?> menu)) {
+            message(minecraft, "鎼俥[backpack-demo] open a backpack first.");
+            return;
+        }
+        List<Slot> filterSlots = new ArrayList<>();
+        for (Slot slot : menu.upgradeSlots) {
+            if (slot instanceof IFilterSlot && slot.hasItem()) {
+                filterSlots.add(slot);
+            }
+        }
+        if (filterSlots.isEmpty()) {
+            message(minecraft, "鎼俥[backpack-demo] put an item into a filter slot first (upgrade tab).");
+            return;
+        }
+        Slot target = filterSlots.get(0);
+        ItemStack sample = target.getItem();
+        pendingItem = sample.getItem();
+        pendingSlot = target.index;
+        pendingAddress = currentAddress(minecraft);
+        beforeStorage = countStorage(menu, pendingItem);
+        beforeInventory = countInventory(minecraft, pendingItem);
+
+        PacketDistributor.sendToServer(new TransferFullSlotPayload(pendingSlot));
+
+        pendingTicks = 10;
+        message(minecraft, "鎼俛[backpack-demo] sent transfer_full_slot for filter slot " + pendingSlot
+                + " (" + name(sample) + " x" + sample.getCount() + ")");
+    }
+
+    // ------------------------------------------------------------------ report
+
+    private static void report(Minecraft minecraft) {
+        if (minecraft.player == null || !(minecraft.player.containerMenu instanceof StorageContainerMenuBase<?> menu)) {
+            pendingTicks = -1;
+            return;
+        }
+        int afterStorage = countStorage(menu, pendingItem);
+        int afterInventory = countInventory(minecraft, pendingItem);
+        int storageDelta = afterStorage - beforeStorage;
+        int inventoryDelta = afterInventory - beforeInventory;
+        int net = storageDelta + inventoryDelta;
+
+        String itemName = BuiltInRegistries.ITEM.getKey(pendingItem).toString();
+        String verdict = net > 0 ? "DUPLICATED (+" + net + ")" : (net == 0 ? "no change" : "lost item");
+        message(minecraft, "鎼?[backpack-demo] " + itemName + ": storage " + beforeStorage + " -> " + afterStorage
+                + ", inventory " + beforeInventory + " -> " + afterInventory + " | net " + net + " => " + verdict);
+
+        JsonObject report = new JsonObject();
+        report.addProperty("recordedAt", OffsetDateTime.now().toString());
+        report.addProperty("address", pendingAddress);
+        report.addProperty("slotId", pendingSlot);
+        report.addProperty("item", itemName);
+        report.addProperty("storageBefore", beforeStorage);
+        report.addProperty("storageAfter", afterStorage);
+        report.addProperty("inventoryBefore", beforeInventory);
+        report.addProperty("inventoryAfter", afterInventory);
+        report.addProperty("netGain", net);
+        report.addProperty("verdict", verdict);
+        try {
+            Path dir = minecraft.gameDirectory.toPath().resolve("backpack-demo");
+            Files.createDirectories(dir);
+            String stamp = OffsetDateTime.now().toString().replace(':', '-').replace('.', '-');
+            Path out = dir.resolve("evidence-" + stamp + ".json");
+            Files.writeString(out, new GsonBuilder().setPrettyPrinting().create().toJson(report), StandardCharsets.UTF_8);
+            message(minecraft, "鎼?[backpack-demo] written to " + out.toAbsolutePath());
+        } catch (Exception e) {
+            message(minecraft, "鎼俢[backpack-demo] could not write evidence: " + e);
+        }
+        pendingTicks = -1;
+    }
+
+    // ------------------------------------------------------------------ helpers
+
+    private static boolean isLocalSession(Minecraft minecraft) {
+        String address = currentAddress(minecraft);
+        return address.isEmpty() || address.contains("127.0.0.1") || address.contains("localhost")
+                || address.contains("[::1]") || address.contains("0:0:0:0:0:0:0:1");
+    }
+
+    private static String currentAddress(Minecraft minecraft) {
+        if (minecraft.getConnection() == null) {
+            return "";
+        }
+        ServerData data = minecraft.getConnection().getServerData();
+        return data == null || data.ip == null ? "" : data.ip.trim().toLowerCase();
+    }
+
+    private static int countStorage(StorageContainerMenuBase<?> menu, Item item) {
+        int total = 0;
+        int limit = Math.min(menu.getNumberOfStorageInventorySlots(), menu.slots.size());
+        for (int i = 0; i < limit; i++) {
+            ItemStack stack = menu.slots.get(i).getItem();
+            if (!stack.isEmpty() && stack.getItem() == item) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    private static int countInventory(Minecraft minecraft, Item item) {
+        int total = 0;
+        for (ItemStack stack : minecraft.player.getInventory().items) {
+            if (!stack.isEmpty() && stack.getItem() == item) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    private static String name(ItemStack stack) {
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+    }
+
+    private static void message(Minecraft minecraft, String text) {
+        if (minecraft.player != null) {
+            minecraft.player.displayClientMessage(Component.literal(text), false);
+        }
+    }
+}

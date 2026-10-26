@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-27T04:56:17.115859800+08:00",
+  "backpacks": "3.26.15",
+  "core": "1.5.18",
+  "neoforge": "21.1.265",
+  "probeItem": "minecraft:dirt",
+  "hasFixMod": true,
+  "filterSlotIndex": 164,
+  "samplePlaced": true,
+  "storageBefore": 0,
+  "packetType": "serverbound/minecraft:custom_payload",
+  "dispatchReturned": true,
+  "storageAfter": 0,
+  "netGain": 0,
+  "verdict": "BLOCKED",
+  "finishedAt": "2026-10-27T04:56:18.112684500+08:00"
+}

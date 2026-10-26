@@ -1,0 +1,12 @@
+# One jar path per line. Copy this file to compile-classpath.txt and replace <LIB>
+# with your own NeoForge library directory (the "libraries" folder next to your
+# NeoForge server jar). Lines starting with # are ignored.
+#
+# Needed: patched Minecraft/NeoForge jars, sponge-mixin, and the two mod jars.
+#<LIB>/net/neoforged/neoforge/21.1.265/neoforge-21.1.265-server.jar
+#<LIB>/net/minecraft/server/1.21.1-20240808.144430/server-1.21.1-20240808.144430-srg.jar
+#<LIB>/net/minecraft/server/1.21.1-20240808.144430/server-1.21.1-20240808.144430-extra.jar
+#<LIB>/net/neoforged/neoforge/21.1.265/neoforge-21.1.265-universal.jar
+#<LIB>/net/fabricmc/sponge-mixin/0.16.4+mixin.0.8.7/sponge-mixin-0.16.4+mixin.0.8.7.jar
+#<MODS>/sophisticatedcore-1.21.1-1.5.18.2431.jar
+#<MODS>/sophisticatedbackpacks-1.21.1-3.26.15.2227.jar

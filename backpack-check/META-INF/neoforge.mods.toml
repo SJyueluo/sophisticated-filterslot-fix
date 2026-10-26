@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "backpack_check"
+version = "1.0.0"
+displayName = "Backpack Filter-Slot Check"
+description = "Server-side self-check for the Sophisticated Backpacks filter-slot transfer defect. Runs once at startup, prints a verdict and writes a JSON report. Does not modify players, blocks or worlds and leaves no items behind."
+
+[[dependencies.backpack_check]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.229,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.backpack_check]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.backpack_check]]
+modId = "sophisticatedcore"
+type = "required"
+versionRange = "[1.4.18,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.backpack_check]]
+modId = "sophisticatedbackpacks"
+type = "required"
+versionRange = "[3.25.36,)"
+ordering = "AFTER"
+side = "BOTH"

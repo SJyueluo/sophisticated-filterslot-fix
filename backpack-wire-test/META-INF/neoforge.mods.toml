@@ -1,0 +1,23 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "backpack_wire_test"
+version = "1.0.0"
+displayName = "Backpack Wire Test"
+description = "Packet-path harness for the filter-slot transfer defect. Isolated test only."
+
+[[dependencies.backpack_wire_test]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.229,)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.backpack_wire_test]]
+modId = "sophisticatedcore"
+type = "required"
+versionRange = "[1.4.18,)"
+ordering = "AFTER"
+side = "SERVER"

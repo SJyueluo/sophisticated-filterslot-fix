@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "local.bpfix.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "target": "@env(DEFAULT)",
+  "mixins": [
+    "TransferFullSlotPayloadMixin",
+    "StorageContainerMenuBaseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

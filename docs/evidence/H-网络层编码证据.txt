@@ -1,0 +1,9 @@
+﻿客户端实际发送字节（sophisticatedcore:transfer_full_slot，slotId=164 过滤槽）
+
+WARN StatusConsoleListener Advanced terminal features are not available in this environment
+payloadType      = sophisticatedcore:transfer_full_slot
+slotIdSent       = 164
+wireBytes        = 4  [00 00 00 A4]
+slotIdDecoded    = 164
+roundTripMatches = true
+recordFields     = TransferFullSlotPayload[slotId=164]

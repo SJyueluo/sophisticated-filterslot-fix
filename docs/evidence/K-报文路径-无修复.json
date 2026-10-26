@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-27T04:56:39.912144200+08:00",
+  "backpacks": "3.26.15",
+  "core": "1.5.18",
+  "neoforge": "21.1.265",
+  "probeItem": "minecraft:dirt",
+  "hasFixMod": false,
+  "filterSlotIndex": 164,
+  "samplePlaced": true,
+  "storageBefore": 0,
+  "packetType": "serverbound/minecraft:custom_payload",
+  "dispatchReturned": true,
+  "storageAfter": 1,
+  "netGain": 1,
+  "verdict": "DUPLICATED",
+  "finishedAt": "2026-10-27T04:56:40.911012+08:00"
+}

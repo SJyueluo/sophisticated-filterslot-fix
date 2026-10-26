@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "backpack_client_demo"
+version = "1.0.0"
+displayName = "Backpack Filter-Slot Demo Probe (client, local only)"
+description = "Client-side reproduction probe for the filter-slot whole-slot-transfer defect. Refuses to run outside single-player or loopback, only addresses filter slots that are already open, and only reports what happened. For local evidence gathering, not for use on other servers."
+
+[[dependencies.backpack_client_demo]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.229,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.backpack_client_demo]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.backpack_client_demo]]
+modId = "sophisticatedcore"
+type = "required"
+versionRange = "[1.4.18,)"
+ordering = "AFTER"
+side = "CLIENT"

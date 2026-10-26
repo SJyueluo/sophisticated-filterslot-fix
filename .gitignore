@@ -1,0 +1,4 @@
+built/
+*.class
+*.log
+compile-classpath.txt
