@@ -45,3 +45,27 @@ between storage, player inventory and upgrade slots still work (`j-dirt-fixed.js
 
 Public issue and PR from the start, no private channel was used and no CVE was requested. No claim is made
 about any specific server, player, or the maintainer's intent.
+
+## Servers pinned to 1.4.x (addon reasons)
+
+Some addons still require an older Core, so upgrading is not an option for every server. On 1.4.x the
+recipe-viewer ghost-slot message is a bare write:
+
+`java
+if (context.player().containerMenu instanceof StorageContainerMenuBase) {
+    context.player().containerMenu.getSlot(payload.slotNumber).set(payload.stack);
+}
+`
+
+ackpack-transfer-fix **1.2.0** adds a SetGhostSlotPayload guard for exactly this case: the write is
+only allowed when the target slot really is an active IFilterSlot the stack may be placed into.
+Measured by calling the message directly against a live menu:
+
+| Core | fix mod | real storage slot | real filter slot |
+| --- | --- | --- | --- |
+| 1.4.18 | none | **64 dirt written (vulnerable)** | 1x diamond (normal) |
+| 1.4.18 | 1.2.0 | 0 (blocked) | 1x diamond (still works) |
+| 1.5.18 | none | 0 (blocked by the core) | rejected by the core's own tab check |
+
+So a 1.4.x server can keep its Core version and still close this path. Raw record:
+docs/evidence/q-ghost-slot-old-core.json.
