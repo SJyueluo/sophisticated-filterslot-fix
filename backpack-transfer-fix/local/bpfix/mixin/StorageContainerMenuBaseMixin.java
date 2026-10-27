@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Second line of defence: the shared quick-move implementation itself refuses to treat a filter
- * sample slot (or any upgrade settings slot) as a transfer source, no matter which caller reaches it.
+ * sample slot as a transfer source, no matter which caller reaches it. Only filter slots are
+ * rejected - crafting ingredients/results and other upgrade settings slots keep their behaviour.
  */
 @Mixin(value = StorageContainerMenuBase.class, remap = false)
 public abstract class StorageContainerMenuBaseMixin {
@@ -29,7 +30,7 @@ public abstract class StorageContainerMenuBaseMixin {
             return;
         }
         Slot slot = menu.getSlot(index);
-        if (slot instanceof IFilterSlot || menu.getSlotUpgradeContainer(slot).isPresent()) {
+        if (slot instanceof IFilterSlot) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }

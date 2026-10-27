@@ -65,7 +65,7 @@ a fake player, exercises the real handlers, then removes the throwaway storage. 
 `-Dbackpack.check.exit=true` to shut down afterwards, and
 `-Dbackpack.check.item=minecraft:dirt` to probe with a different item.
 
-**Fix a server** — drop `backpack-transfer-fix-1.0.0.jar` into `mods/` and restart. Server side
+**Fix a server** — drop `backpack-transfer-fix-1.1.0.jar` into `mods/` and restart. Server side
 only; clients do not need it. Normal storage, player-inventory and upgrade-item transfers are
 unchanged. The mixin targets two methods; if a future release renames them the server fails to
 start instead of silently losing the guard.

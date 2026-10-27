@@ -35,7 +35,7 @@ public class TransferFullSlotPayloadMixin {
             return;
         }
         Slot slot = menu.getSlot(slotId);
-        if (slot instanceof IFilterSlot || menu.getSlotUpgradeContainer(slot).isPresent() || !slot.isActive()) {
+        if (slot instanceof IFilterSlot || !slot.isActive() || !slot.mayPickup(player)) {
             ci.cancel();
         }
     }

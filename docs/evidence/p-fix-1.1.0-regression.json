@@ -1,0 +1,26 @@
+{
+    "check":  "standalone fix mod 1.1.0 (backpack-transfer-fix)",
+    "note":  "Same narrowed conditions as the upstream PR (0e7b723). Verified on the released 1.5.18 build.",
+    "fixJarSha256":  "b72ae2caa1b3533be22ca8ef4aee948211de45513dd024fa7067b6ae49488b7d",
+    "filterTransfer":  {
+                           "overall":  "FIXED",
+                           "tier1":  "BLOCKED  gain=0 repeat5=0",
+                           "regression":  "moved=3"
+                       },
+    "crafting":  {
+                     "at":  "2026-10-27T16:15:14.781767800+08:00",
+                     "core":  "1.5.18",
+                     "backpacks":  "3.26.15",
+                     "craftingContainerFound":  true,
+                     "recipeSlots":  9,
+                     "containerSlots":  10,
+                     "ingredientSlotIndex":  163,
+                     "ingredientMoved":  1,
+                     "ingredientSlotAfter":  "empty",
+                     "resultSlotIndex":  172,
+                     "resultSlotFilled":  true,
+                     "resultMoved":  4,
+                     "resultSlotAfter":  "empty"
+                 },
+    "conclusion":  "filter sample blocked; crafting ingredient and result slots still quick-move identically"
+}
