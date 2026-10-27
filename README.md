@@ -141,3 +141,13 @@ Not claimed:
 The upstream ticket is [SophisticatedCore#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517).
 It is open, and the reproduction described there is a modified-client one. If that is out of scope for the maintainer,
 the two-line guard in `docs/defect-and-fix.md` is the smallest change that closes the path regardless of what a client sends.
+## Probe policy (fixed)
+
+The client probe is written so that it **cannot** be pointed at a remote server:
+
+- loopback is checked before the key handler does anything, and again immediately before the packet is sent;
+- the check resolves the host and accepts only loopback addresses, not a string match;
+- both failures print the address that was seen;
+- there is exactly one send site in the whole mod.
+
+Any future edit that removes either check is a regression, not a feature.

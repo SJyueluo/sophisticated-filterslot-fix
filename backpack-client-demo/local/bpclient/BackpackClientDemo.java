@@ -109,6 +109,14 @@ public final class BackpackClientDemo {
         beforeStorage = countStorage(menu, pendingItem);
         beforeInventory = countInventory(minecraft, pendingItem);
 
+        // POLICY (do not remove): this probe may only ever talk to the local server. Re-checked at the
+        // send site so that no future change to the key handler can turn it into a remote-capable client.
+        if (!isLocalSession(minecraft)) {
+            message(minecraft, "[backpack-demo] refused at send time: not a loopback session (saw: " + safeAddress(minecraft) + ").");
+            pendingSlot = -1;
+            pendingTicks = 0;
+            return;
+        }
         PacketDistributor.sendToServer(new TransferFullSlotPayload(pendingSlot));
 
         pendingTicks = 10;
