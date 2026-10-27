@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.KeyMapping;
@@ -33,7 +34,7 @@ import net.p3pp3rf1y.sophisticatedcore.network.TransferFullSlotPayload;
  * <p>Deliberately limited so it cannot be used as a cheat on someone else's server:
  * <ul>
  *   <li>refuses to act unless the session is single-player or a loopback address;</li>
- *   <li>never takes a slot id from the user 閳?it only addresses filter slots that are currently
+ *   <li>never takes a slot id from the user ?it only addresses filter slots that are currently
  *       open in the menu;</li>
  *   <li>does nothing unless the user presses the (unbound by default) key;</li>
  *   <li>only reports what happened; it does not repeat, loop or script anything.</li>
@@ -83,11 +84,11 @@ public final class BackpackClientDemo {
             return;
         }
         if (!isLocalSession(minecraft)) {
-            message(minecraft, "鎼俢[backpack-demo] refused: this probe only runs in single-player or on a loopback address.");
+            message(minecraft, "[backpack-demo] refused: this probe only runs in single-player or on a loopback address (saw: " + safeAddress(minecraft) + ").");
             return;
         }
         if (!(minecraft.player.containerMenu instanceof StorageContainerMenuBase<?> menu)) {
-            message(minecraft, "鎼俥[backpack-demo] open a backpack first.");
+            message(minecraft, "[backpack-demo] open a backpack first.");
             return;
         }
         List<Slot> filterSlots = new ArrayList<>();
@@ -97,7 +98,7 @@ public final class BackpackClientDemo {
             }
         }
         if (filterSlots.isEmpty()) {
-            message(minecraft, "鎼俥[backpack-demo] put an item into a filter slot first (upgrade tab).");
+            message(minecraft, "[backpack-demo] put an item into a filter slot first (upgrade tab).");
             return;
         }
         Slot target = filterSlots.get(0);
@@ -111,7 +112,7 @@ public final class BackpackClientDemo {
         PacketDistributor.sendToServer(new TransferFullSlotPayload(pendingSlot));
 
         pendingTicks = 10;
-        message(minecraft, "鎼俛[backpack-demo] sent transfer_full_slot for filter slot " + pendingSlot
+        message(minecraft, "[backpack-demo] sent transfer_full_slot for filter slot " + pendingSlot
                 + " (" + name(sample) + " x" + sample.getCount() + ")");
     }
 
@@ -130,7 +131,7 @@ public final class BackpackClientDemo {
 
         String itemName = BuiltInRegistries.ITEM.getKey(pendingItem).toString();
         String verdict = net > 0 ? "DUPLICATED (+" + net + ")" : (net == 0 ? "no change" : "lost item");
-        message(minecraft, "鎼?[backpack-demo] " + itemName + ": storage " + beforeStorage + " -> " + afterStorage
+        message(minecraft, "?[backpack-demo] " + itemName + ": storage " + beforeStorage + " -> " + afterStorage
                 + ", inventory " + beforeInventory + " -> " + afterInventory + " | net " + net + " => " + verdict);
 
         JsonObject report = new JsonObject();
@@ -150,9 +151,9 @@ public final class BackpackClientDemo {
             String stamp = OffsetDateTime.now().toString().replace(':', '-').replace('.', '-');
             Path out = dir.resolve("evidence-" + stamp + ".json");
             Files.writeString(out, new GsonBuilder().setPrettyPrinting().create().toJson(report), StandardCharsets.UTF_8);
-            message(minecraft, "鎼?[backpack-demo] written to " + out.toAbsolutePath());
+            message(minecraft, "?[backpack-demo] written to " + out.toAbsolutePath());
         } catch (Exception e) {
-            message(minecraft, "鎼俢[backpack-demo] could not write evidence: " + e);
+            message(minecraft, "[backpack-demo] could not write evidence: " + e);
         }
         pendingTicks = -1;
     }
@@ -161,8 +162,38 @@ public final class BackpackClientDemo {
 
     private static boolean isLocalSession(Minecraft minecraft) {
         String address = currentAddress(minecraft);
-        return address.isEmpty() || address.contains("127.0.0.1") || address.contains("localhost")
-                || address.contains("[::1]") || address.contains("0:0:0:0:0:0:0:1");
+        if (address.isEmpty()) {
+            return true;
+        }
+        String host = stripPort(address);
+        // Minecraft rewrites 127.0.0.1 to this mapped form when IPv6 is preferred; it is the local server.
+        if (host.contains("fdfe:dcba:9876:")) {
+            return true;
+        }
+        try {
+            return InetAddress.getByName(host).isLoopbackAddress();
+        } catch (Exception ignored) {
+            return host.equals("localhost");
+        }
+    }
+
+    private static String stripPort(String address) {
+        String value = address;
+        if (value.startsWith("[")) {
+            int close = value.indexOf(']');
+            return close > 0 ? value.substring(1, close) : value;
+        }
+        int firstColon = value.indexOf(':');
+        int lastColon = value.lastIndexOf(':');
+        if (firstColon > 0 && firstColon == lastColon) {
+            return value.substring(0, firstColon);
+        }
+        return value;
+    }
+
+    private static String safeAddress(Minecraft minecraft) {
+        String address = currentAddress(minecraft);
+        return address.isEmpty() ? "<none>" : address;
     }
 
     private static String currentAddress(Minecraft minecraft) {
