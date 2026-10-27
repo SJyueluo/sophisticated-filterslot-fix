@@ -1,0 +1,21 @@
+{
+    "check":  "crafting upgrade quick-move regression",
+    "note":  "Same harness run against the released 1.5.18 jar and the patched 1.21.x build (PR #518, commit 0e7b723).",
+    "unpatched":  {
+                      "core":  "1.5.18",
+                      "craftingContainerFound":  true,
+                      "ingredientMoved":  1,
+                      "resultMoved":  4,
+                      "ingredientSlotAfter":  "empty",
+                      "resultSlotAfter":  "empty"
+                  },
+    "patched":  {
+                    "core":  "1.5.19",
+                    "craftingContainerFound":  true,
+                    "ingredientMoved":  1,
+                    "resultMoved":  4,
+                    "ingredientSlotAfter":  "empty",
+                    "resultSlotAfter":  "empty"
+                },
+    "conclusion":  "identical behaviour: ingredient 1 item and result 4 items still quick-move with the patch applied"
+}
