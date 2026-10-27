@@ -4,7 +4,7 @@ license = "All rights reserved"
 
 [[mods]]
 modId = "backpack_transfer_fix"
-version = "1.1.0"
+version = "1.2.0"
 displayName = "Backpack Filter-Slot Transfer Fix"
 description = "Rejects server-side whole-slot transfers whose source is a filter sample slot or an upgrade settings slot. Mitigates the Sophisticated Backpacks filter-slot item duplication / creation defect. Server-side only."
 

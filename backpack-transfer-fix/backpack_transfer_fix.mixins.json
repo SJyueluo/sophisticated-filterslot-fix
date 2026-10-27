@@ -6,7 +6,8 @@
   "target": "@env(DEFAULT)",
   "mixins": [
     "TransferFullSlotPayloadMixin",
-    "StorageContainerMenuBaseMixin"
+    "StorageContainerMenuBaseMixin",
+    "SetGhostSlotPayloadMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,28 @@
+{
+    "check":  "standalone fix mod 1.2.0 now also covers the 1.4.x ghost-slot write",
+    "note":  "SetGhostSlotPayload.handlePayload called directly with a real menu; storage slot must be refused, filter slot must still accept the sample.",
+    "fixJarSha256":  "0082600b74852397e3f6073bf7993ff98cc018fe4ad1a80aa3f672f6571ee48d",
+    "results":  [
+                    {
+                        "fix":  "none",
+                        "verdict":  "VULNERABLE (bare Slot.set)",
+                        "core":  "1.4.18",
+                        "filterSlot":  "1x minecraft:diamond",
+                        "storageSlotWrite":  64
+                    },
+                    {
+                        "fix":  "1.2.0",
+                        "verdict":  "BLOCKED, legitimate filter write kept",
+                        "core":  "1.4.18",
+                        "filterSlot":  "1x minecraft:diamond",
+                        "storageSlotWrite":  0
+                    },
+                    {
+                        "fix":  "none",
+                        "verdict":  "BLOCKED by the core itself",
+                        "core":  "1.5.18",
+                        "filterSlot":  "rejected",
+                        "storageSlotWrite":  0
+                    }
+                ]
+}
