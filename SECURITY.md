@@ -10,6 +10,7 @@ Verified by running the published JARs on a dedicated server:
 | Build | Result |
 | --- | --- |
 | Core `1.5.18.2431` / Backpacks `3.26.15.2227` | filter sample transferable into real storage |
+| Core `1.5.19.2434` (released 2026-10-27) / Backpacks `3.26.15.2227` | **still transferable** - `gain=1 repeat5=5`, `slotId=-1` still throws |
 | Core `1.4.18.1629` / Backpacks `3.25.36.1629` | same transfer path; additionally the ghost-slot message writes any menu slot with a bare `Slot.set` |
 
 ## Impact
