@@ -1,4 +1,4 @@
-﻿客户端实际发送字节（sophisticatedcore:transfer_full_slot，slotId=164 过滤槽）
+客户端实际发送字节（sophisticatedcore:transfer_full_slot，slotId=164 过滤槽）
 
 WARN StatusConsoleListener Advanced terminal features are not available in this environment
 payloadType      = sophisticatedcore:transfer_full_slot
