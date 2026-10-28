@@ -6,6 +6,10 @@ validation defect in Sophisticated Backpacks / Sophisticated Core.
 The defect: a filter (ghost) sample slot denies pickup, but the whole-slot transfer path never
 consults that permission, so a client-supplied slot id can turn a sample into a real item.
 
+**Status (2026-10-28):** reported upstream, patch open as PR #518, **not fixed in any released build tested**.
+1.21.1-1.5.19.2434 (released 2026-10-27) still reproduces: `gain=1 repeat5=5`. See
+[`docs/disclosure-timeline.md`](docs/disclosure-timeline.md) for the full record.
+
 - Upstream report: [P3pp3rF1y/SophisticatedCore#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517)
 - Reviewed versions: Sophisticated Backpacks `1.21.1-3.26.15.2227`,
   Sophisticated Core `1.21.1-1.5.18.2431` (Minecraft 1.21.1, NeoForge 21.1.265)
