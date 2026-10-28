@@ -70,3 +70,7 @@ Measured by calling the message directly against a live menu:
 
 So a 1.4.x server can keep its Core version and still close this path. Raw record:
 docs/evidence/q-ghost-slot-old-core.json.
+
+## Scope
+
+The handler exists on every published Core line; runtime reproduction was done on 1.21.1 only. Per-line evidence and exact JAR hashes: [`docs/impact-scope.md`](docs/impact-scope.md).
