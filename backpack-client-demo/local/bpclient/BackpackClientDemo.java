@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
@@ -23,7 +22,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.IFilterSlot;
@@ -50,7 +48,6 @@ public final class BackpackClientDemo {
 
     private static final int GLFW_KEY = 75;
     private static boolean probeKeyWasDown;
-    private static KeyMapping demoKey;
     private static int pendingTicks = -1;
     private static int pendingSlot = -1;
     private static Item pendingItem;
@@ -60,20 +57,12 @@ public final class BackpackClientDemo {
     private static String refusal = "";
 
     public BackpackClientDemo(IEventBus modEventBus) {
-        modEventBus.addListener(this::onRegisterKeys);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
-    }
-
-    private void onRegisterKeys(RegisterKeyMappingsEvent event) {
-        // Registered so it shows up in Controls, but it is NOT what triggers the probe: KeyMapping only
-        // dispatches while no screen is open, and the probe has to work with the backpack GUI open.
-        demoKey = new KeyMapping("key.backpack_client_demo.send", GLFW_KEY, CATEGORY);
-        event.register(demoKey);
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
-        // Raw polling: works with any screen open, which KeyMapping.consumeClick() does not.
+        // Raw polling: works with any screen open, which event-based key handling does not.
         boolean typing = minecraft.screen != null && !(minecraft.screen instanceof AbstractContainerScreen<?>);
         boolean down = !typing && isProbeKeyDown(minecraft);
         if (down && !probeKeyWasDown) {
@@ -157,7 +146,7 @@ public final class BackpackClientDemo {
 
         String itemName = BuiltInRegistries.ITEM.getKey(pendingItem).toString();
         String verdict = net > 0 ? "DUPLICATED (+" + net + ")" : (net == 0 ? "no change" : "lost item");
-        message(minecraft, "?[backpack-demo] " + itemName + ": storage " + beforeStorage + " -> " + afterStorage
+        message(minecraft, "[backpack-demo] " + itemName + ": storage " + beforeStorage + " -> " + afterStorage
                 + ", inventory " + beforeInventory + " -> " + afterInventory + " | net " + net + " => " + verdict);
 
         JsonObject report = new JsonObject();
@@ -177,7 +166,7 @@ public final class BackpackClientDemo {
             String stamp = OffsetDateTime.now().toString().replace(':', '-').replace('.', '-');
             Path out = dir.resolve("evidence-" + stamp + ".json");
             Files.writeString(out, new GsonBuilder().setPrettyPrinting().create().toJson(report), StandardCharsets.UTF_8);
-            message(minecraft, "?[backpack-demo] written to " + out.toAbsolutePath());
+            message(minecraft, "[backpack-demo] written to " + out.toAbsolutePath());
         } catch (Exception e) {
             message(minecraft, "[backpack-demo] could not write evidence: " + e);
         }

@@ -4,7 +4,7 @@ license = "All rights reserved"
 
 [[mods]]
 modId = "backpack_client_demo"
-version = "1.3.3"
+version = "1.3.4"
 displayName = "Backpack Filter-Slot Demo Probe (client, local only)"
 description = "Client-side reproduction probe for the filter-slot whole-slot-transfer defect. Refuses to run outside single-player or loopback, only addresses filter slots that are already open, and only reports what happened. For local evidence gathering, not for use on other servers."
 
