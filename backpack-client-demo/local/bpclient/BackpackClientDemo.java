@@ -9,7 +9,9 @@ import java.time.OffsetDateTime;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,6 +48,8 @@ public final class BackpackClientDemo {
     public static final String MODID = "backpack_client_demo";
     private static final String CATEGORY = "Backpack Demo (local only)";
 
+    private static final int GLFW_KEY = 75;
+    private static boolean probeKeyWasDown;
     private static KeyMapping demoKey;
     private static int pendingTicks = -1;
     private static int pendingSlot = -1;
@@ -61,19 +65,33 @@ public final class BackpackClientDemo {
     }
 
     private void onRegisterKeys(RegisterKeyMappingsEvent event) {
-        demoKey = new KeyMapping("key.backpack_client_demo.send", -1, CATEGORY);
+        // Registered so it shows up in Controls, but it is NOT what triggers the probe: KeyMapping only
+        // dispatches while no screen is open, and the probe has to work with the backpack GUI open.
+        demoKey = new KeyMapping("key.backpack_client_demo.send", GLFW_KEY, CATEGORY);
         event.register(demoKey);
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (demoKey != null) {
-            while (demoKey.consumeClick()) {
-                attempt(minecraft);
-            }
+        // Raw polling: works with any screen open, which KeyMapping.consumeClick() does not.
+        boolean typing = minecraft.screen != null && !(minecraft.screen instanceof AbstractContainerScreen<?>);
+        boolean down = !typing && isProbeKeyDown(minecraft);
+        if (down && !probeKeyWasDown) {
+            attempt(minecraft);
         }
+        probeKeyWasDown = down;
+
         if (pendingTicks > 0 && --pendingTicks == 0) {
             report(minecraft);
+        }
+    }
+
+    private static boolean isProbeKeyDown(Minecraft minecraft) {
+        try {
+            long handle = minecraft.getWindow().getWindow();
+            return InputConstants.isKeyDown(handle, GLFW_KEY);
+        } catch (Throwable ignored) {
+            return false;
         }
     }
 
