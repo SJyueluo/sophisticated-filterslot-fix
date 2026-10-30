@@ -1,6 +1,34 @@
 # Impact scope
 
-Status: 2026-10-28. Every number below was produced in this project and can be re-run.
+Status: 2026-10-30. Every number below was produced in this project and can be re-run.
+
+## Two separate issues — fixing one does not fix the other
+
+There are two independent channels in this mod. They were fixed at different times, in different places, and
+neither one substitutes for the other:
+
+| # | Channel | What it is | Present in | Fixed in |
+| --- | --- | --- | --- | --- |
+| 1 | whole-slot transfer | `transfer_full_slot` carries a filter-slot index, the server does not validate the source, the sample is merged into a real item | **every line** (1.18.2 → 26.3) | **no release, on any line** |
+| 2 | ghost-slot write | `set_ghost_slot` writes the client's stack into a slot directly | 1.18.2, 1.19.2, and 1.21.1 up to `1.4.18` | 1.20.1 and later route through the validated `setGhostSlot`; 1.21.1 from `1.5.x` |
+
+**A fix for the ghost-slot write says nothing about the transfer path.** The clearest example is 1.20.1:
+
+- its `SetGhostSlotMessage` already calls `menu.setGhostSlot(...)`, so **channel 2 is fixed there**;
+- its `TransferFullSlotMessage.handleMessage` is still `getSlot(slotId)` → `quickMoveStack(slotId)`, and
+  `mergeSlotStack` still goes to `mergeStackToStorage` unconditionally, so **channel 1 is not fixed**.
+
+Reading only the ghost-slot handler is what produces the wrong conclusion "1.20.1 does not have this bug".
+
+## Upstream status as of 2026-10-30
+
+- `#517` and `#518` have had **no further maintainer reply since 2026-10-26**; both are still open.
+- The last commit on `1.21.x` is 2026-10-27 and changes linked-storage render state; it does **not** touch the
+  transfer handler.
+- The latest 1.21.1 release is still `1.5.19.2434` (published 2026-10-27) and **still reproduces** (`gain=1`,
+  repeat 5 → `+5`).
+- In other words: **as of today, no change has been made for either of the two channels.**
+
 
 ## The short version
 

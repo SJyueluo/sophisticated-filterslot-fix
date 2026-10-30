@@ -1,7 +1,19 @@
 # Security note: filter samples can be merged into real storage
 
-Status as of 2026-10-27: reported upstream ([#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517)),
+Status as of 2026-10-30: reported upstream ([#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517)),
 fix proposed ([#518](https://github.com/P3pp3rF1y/SophisticatedCore/pull/518)), **not fixed in any released build I tested**.
+No maintainer reply on either thread since 2026-10-26, and no change for either defect channel below.
+
+## Two separate issues — do not read a fix for one as a fix for the other
+
+| # | Channel | Present in | Fixed in |
+| --- | --- | --- | --- |
+| 1 | whole-slot transfer: `transfer_full_slot` with a filter-slot index, source not validated | **every line**, 1.18.2 → 26.3 | **no release on any line** |
+| 2 | ghost-slot write: `set_ghost_slot` writes the client stack into a slot | 1.18.2, 1.19.2, 1.21.1 ≤ `1.4.18` | 1.20.1+ (validated `setGhostSlot`), 1.21.1 from `1.5.x` |
+
+Worked example: **1.20.1** validates the ghost-slot write (channel 2 fixed) but its transfer handler still takes
+the slot id from the client and calls `quickMoveStack` with it (channel 1 not fixed). Checking only the
+ghost-slot handler produces the wrong conclusion that 1.20.1 is unaffected.
 
 ## Affected
 
