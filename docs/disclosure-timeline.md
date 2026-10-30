@@ -37,12 +37,25 @@ All times UTC. Every line below is either a public link or a result recorded in 
 | 03:41 | Status check: #517 and #518 unchanged, no review, no inline comments, no reply. Last maintainer statement in either thread is still the 2026-10-26 21:56 question. |
 | 03:41 | Release `1.21.1-1.5.19.2434` downloaded from Modrinth, SHA-512 verified against the published hash, and tested: **still vulnerable** — `tier1 gain=1 repeat5=5`, `slotId=-1` still throws `IndexOutOfBoundsException`. Bytecode of `handlePayload` is unchanged (`getSlot` → `quickMoveStack`, no `mayPickup`). Record: `docs/evidence/r-1519-vulnerable.json`. |
 
+## 2026-10-29 / 2026-10-30 — fixed upstream
+
+| Time | Event |
+| --- | --- |
+| 2026-10-29 22:38 | Maintainer commits `cf8aa31`, "Fixed forged requests bypassing inventory access restrictions". The diff adds a bounds check plus `slot instanceof IFilterSlot \|\| !slot.isActive() \|\| !slot.mayPickup(player)` to `StorageContainerMenuBase.quickMoveStack`, makes `TransferFullSlotPayload.handlePayload` require `isStorageInventorySlot(slotId)` and `mayPickup`, tightens the two client send sites, and adds `ItemStackReference` validation for recipe transfer, with tests. |
+| 2026-10-30 13:54–14:17 | Releases published: `1.21.1-1.5.21.2439`, `1.20.1-1.5.19.2441`, `26.1.2-1.5.22.2442`, `26.2-1.5.20.2440`, `26.3-1.5.22.2443`. |
+| 2026-10-30 15:39 | Issue `#517` closed with: *"I took a different approach to the fix but this is properly validated now"*. |
+| 2026-10-30 16:xx | This project downloads `1.21.1-1.5.21.2439` (SHA-512 matches), runs the check tool: **`tier1 BLOCKED`, `gain=0 repeat5=0`, `slotId=-1` no longer throws, regression `moved=3`, OVERALL FIXED**. Bytecode confirms the guard is in the shipped jar. |
+| 2026-10-30 16:xx | The other 2026-10-30 JARs (`1.20.1`, `26.1.2`, `26.2`, `26.3`) are checked the same way: `quickMoveStack` contains `IFilterSlot` + `mayPickup` + bounds. |
+
+Not fixed: 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11 (latest releases 2026-09-27) and 1.18.2 / 1.19.2
+(latest releases 2024-11-17, branches untouched since 2024).
+
 ## Where it stands
 
-- The defect is present in every released build tested: `1.4.18.1629`, `1.5.18.2431`, `1.5.19.2434`.
-- A patch exists as PR #518. It is unresolved and blocked on an unsigned CLA.
-- The one question that would settle this is unanswered: **is a modified client in scope?**
-  - If no: the report is out of scope and the issue can be closed on those grounds.
-  - If yes: the two-line guard in #518 closes it, and it is already verified to leave normal transfers and crafting intact.
+- Channel 1 (whole-slot transfer) is fixed on 1.20.1, 1.21.1, 26.1.2, 26.2, 26.3 as of the 2026-10-30 releases;
+  it is **not** fixed on 1.18.2, 1.19.2, or 1.21.4–1.21.11.
+- Channel 2 (bare ghost-slot write) is fixed from 1.20.1 onward and never applied to 1.18.2 / 1.19.2.
+- PR #518 is superseded by `cf8aa31`, which implements the same guard in the same place plus stricter payload
+  validation. It remains open and unmerged.
 
 No claim is made here about intent, about any specific server, or about any player. This page is a record of what was reported, what was answered, and what was measured.

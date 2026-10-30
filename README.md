@@ -6,24 +6,29 @@ validation defect in Sophisticated Backpacks / Sophisticated Core.
 The defect: a filter (ghost) sample slot denies pickup, but the whole-slot transfer path never
 consults that permission, so a client-supplied slot id can turn a sample into a real item.
 
-**Status (2026-10-30):** reported upstream, patch open as PR #518, **not fixed in any released build tested**.
-`1.21.1-1.5.19.2434` (released 2026-10-27) still reproduces: `gain=1 repeat5=5`. The maintainer has made no
-change for either defect channel and has not replied on `#517` / `#518` since 2026-10-26. See
-[`docs/disclosure-timeline.md`](docs/disclosure-timeline.md) for the full record.
+**Status (2026-10-30): FIXED upstream, partially.** The maintainer committed a fix on 2026-10-29
+(`cf8aa31` — "Fixed forged requests bypassing inventory access restrictions"), released it, and closed
+`#517` on 2026-10-30 with "I took a different approach to the fix but this is properly validated now".
+Our own check tool reports **FIXED** on the new `1.21.1-1.5.21.2439`: `tier1 BLOCKED`, `gain=0 repeat5=0`,
+`slotId=-1` no longer throws, normal transfer still `moved=3`.
 
-**Two separate issues — fixing one does not fix the other.**
+Fixed lines (2026-10-30 releases): 1.21.1, 1.20.1, 26.1.2, 26.2, 26.3.
+**Still unfixed:** 1.18.2 and 1.19.2 (last releases 2024-11-17, branches untouched), and 1.21.4 / 1.21.5 /
+1.21.8 / 1.21.10 / 1.21.11 (last releases 2026-09-27, before the fix).
+
+**Two defect channels — fixing one does not fix the other.**
 
 | # | Channel | Present in | Fixed in |
 | --- | --- | --- | --- |
-| 1 | whole-slot transfer (`transfer_full_slot`, filter sample merged into a real item) | **every line**, 1.18.2 → 26.3 | **no release on any line** |
-| 2 | ghost-slot write (`set_ghost_slot`, client stack written into a slot) | 1.18.2, 1.19.2, 1.21.1 ≤ `1.4.18` | 1.20.1+ (validated `setGhostSlot`), 1.21.1 from `1.5.x` |
+| 1 | whole-slot transfer (`transfer_full_slot`, filter sample merged into a real item) | every line, 1.18.2 → 26.3 | the 2026-10-30 releases listed above; **not** in 1.18.2, 1.19.2, 1.21.4–1.21.11 |
+| 2 | ghost-slot write (`set_ghost_slot`, client stack written into a slot) | 1.18.2, 1.19.2, 1.21.1 ≤ `1.4.18` | 1.20.1+ (validated `setGhostSlot`), 1.21.1 from `1.5.x`; **not** in 1.18.2 / 1.19.2 |
 
-The clearest example is 1.20.1: its `SetGhostSlotMessage` is already validated, but its transfer handler is
-not — so "the ghost-slot write is fixed there" must not be read as "1.20.1 has no defect".
+The clearest example is 1.20.1 before its 2026-10-30 build: `SetGhostSlotMessage` was already validated while
+the transfer handler was not, so "the ghost-slot write is fixed there" never meant "1.20.1 has no defect".
 
-**Impact scope:** the same unvalidated handler exists in every published Core line, 1.18.2 through 26.3.
-Runtime reproduction was done on **1.21.1 only** — the other lines are verified at code level (disassembled
-JARs, or that branch's published source). Per-line table, evidence type and exact JAR hashes:
+**Impact scope:** the unvalidated handler shipped on every line from 1.18.2 to 26.3. Runtime reproduction was
+done on **1.21.1 only**; the other lines are verified at code level (disassembled JARs, or branch source).
+Per-line table, evidence type and exact JAR hashes:
 [`docs/impact-scope.md`](docs/impact-scope.md) (English) /
 [`docs/impact-scope.zh-CN.md`](docs/impact-scope.zh-CN.md) (中文).
 

@@ -1,19 +1,26 @@
 # Security note: filter samples can be merged into real storage
 
-Status as of 2026-10-30: reported upstream ([#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517)),
-fix proposed ([#518](https://github.com/P3pp3rF1y/SophisticatedCore/pull/518)), **not fixed in any released build I tested**.
-No maintainer reply on either thread since 2026-10-26, and no change for either defect channel below.
+Status as of 2026-10-30: **fixed upstream on some lines.** The maintainer committed `cf8aa31`
+("Fixed forged requests bypassing inventory access restrictions") on 2026-10-29, released it, and closed
+[#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517) on 2026-10-30. Our check tool reports
+**FIXED** on `1.21.1-1.5.21.2439` (`tier1 BLOCKED`, `gain=0`, `slotId=-1` no longer throws, normal transfer
+still `moved=3`).
+
+| Status | Lines |
+| --- | --- |
+| fixed in the 2026-10-30 releases | 1.21.1 `1.5.21.2439`, 1.20.1 `1.5.19.2441`, 26.1.2 `1.5.22.2442`, 26.2 `1.5.20.2440`, 26.3 `1.5.22.2443` |
+| **not fixed** | 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11 (latest releases 2026-09-27) and 1.18.2 / 1.19.2 (latest releases 2024-11-17) |
 
 ## Two separate issues — do not read a fix for one as a fix for the other
 
 | # | Channel | Present in | Fixed in |
 | --- | --- | --- | --- |
-| 1 | whole-slot transfer: `transfer_full_slot` with a filter-slot index, source not validated | **every line**, 1.18.2 → 26.3 | **no release on any line** |
-| 2 | ghost-slot write: `set_ghost_slot` writes the client stack into a slot | 1.18.2, 1.19.2, 1.21.1 ≤ `1.4.18` | 1.20.1+ (validated `setGhostSlot`), 1.21.1 from `1.5.x` |
+| 1 | whole-slot transfer: `transfer_full_slot` with a filter-slot index, source not validated | every line, 1.18.2 → 26.3 | the 2026-10-30 releases above; **not** in 1.18.2, 1.19.2, 1.21.4–1.21.11 |
+| 2 | ghost-slot write: `set_ghost_slot` writes the client stack into a slot | 1.18.2, 1.19.2, 1.21.1 ≤ `1.4.18` | 1.20.1+ (validated `setGhostSlot`), 1.21.1 from `1.5.x`; **not** in 1.18.2 / 1.19.2 |
 
-Worked example: **1.20.1** validates the ghost-slot write (channel 2 fixed) but its transfer handler still takes
-the slot id from the client and calls `quickMoveStack` with it (channel 1 not fixed). Checking only the
-ghost-slot handler produces the wrong conclusion that 1.20.1 is unaffected.
+Worked example: **1.20.1 before 2026-10-30** validated the ghost-slot write (channel 2 fixed) while its transfer
+handler still took the slot id from the client (channel 1 not fixed). Checking only the ghost-slot handler
+produced the wrong conclusion that 1.20.1 was unaffected — the missing half only shipped in `1.5.19.2441`.
 
 ## Affected
 

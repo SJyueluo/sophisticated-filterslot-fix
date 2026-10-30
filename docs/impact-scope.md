@@ -2,6 +2,25 @@
 
 Status: 2026-10-30. Every number below was produced in this project and can be re-run.
 
+## Fix status (2026-10-30)
+
+The maintainer committed a fix on 2026-10-29 (`cf8aa31` — "Fixed forged requests bypassing inventory access
+restrictions"), released it, and closed `#517` on 2026-10-30 with: *"I took a different approach to the fix but
+this is properly validated now"*.
+
+**Our own check tool reports FIXED on `1.21.1-1.5.21.2439`:** `tier1 BLOCKED`, `gain=0`, repeat 5 → `0`,
+`slotId=-1` no longer throws, and the normal whole-slot transfer still moves items (`moved=3`).
+
+| Status | Lines | Evidence |
+| --- | --- | --- |
+| **fixed** | 1.21.1 (`1.5.21.2439`) | measured FIXED at runtime, plus bytecode |
+| **fixed** | 1.20.1 (`1.5.19.2441`), 26.1.2 (`1.5.22.2442`), 26.2 (`1.5.20.2440`), 26.3 (`1.5.22.2443`) | bytecode: `quickMoveStack` now contains `IFilterSlot`, `mayPickup` and the bounds check |
+| **not fixed** | 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11 | latest releases are 2026-09-27, before the fix |
+| **not fixed** | 1.18.2 / 1.19.2 | latest releases are 2024-11-17; those branches have not been touched since 2024 |
+
+**What was fixed is channel 1.** Channel 2 (the ghost-slot write) is still a bare `Slot.set` on 1.18.2 and
+1.19.2, so those two lines have neither fix.
+
 ## Two separate issues — fixing one does not fix the other
 
 There are two independent channels in this mod. They were fixed at different times, in different places, and
@@ -9,25 +28,18 @@ neither one substitutes for the other:
 
 | # | Channel | What it is | Present in | Fixed in |
 | --- | --- | --- | --- | --- |
-| 1 | whole-slot transfer | `transfer_full_slot` carries a filter-slot index, the server does not validate the source, the sample is merged into a real item | **every line** (1.18.2 → 26.3) | **no release, on any line** |
-| 2 | ghost-slot write | `set_ghost_slot` writes the client's stack into a slot directly | 1.18.2, 1.19.2, and 1.21.1 up to `1.4.18` | 1.20.1 and later route through the validated `setGhostSlot`; 1.21.1 from `1.5.x` |
+| 1 | whole-slot transfer | `transfer_full_slot` carries a filter-slot index, the server does not validate the source, the sample is merged into a real item | every line (1.18.2 → 26.3) | the 2026-10-30 releases listed above; **not** in 1.18.2, 1.19.2, 1.21.4–1.21.11 |
+| 2 | ghost-slot write | `set_ghost_slot` writes the client's stack into a slot directly | 1.18.2, 1.19.2, and 1.21.1 up to `1.4.18` | 1.20.1 and later route through the validated `setGhostSlot`; 1.21.1 from `1.5.x`; **not** in 1.18.2 / 1.19.2 |
 
-**A fix for the ghost-slot write says nothing about the transfer path.** The clearest example is 1.20.1:
+**A fix for the ghost-slot write says nothing about the transfer path.** The clearest example is 1.20.1 *before*
+its 2026-10-30 build:
 
-- its `SetGhostSlotMessage` already calls `menu.setGhostSlot(...)`, so **channel 2 is fixed there**;
-- its `TransferFullSlotMessage.handleMessage` is still `getSlot(slotId)` → `quickMoveStack(slotId)`, and
-  `mergeSlotStack` still goes to `mergeStackToStorage` unconditionally, so **channel 1 is not fixed**.
+- its `SetGhostSlotMessage` already called `menu.setGhostSlot(...)`, so **channel 2 was fixed there**;
+- its `TransferFullSlotMessage.handleMessage` was still `getSlot(slotId)` → `quickMoveStack(slotId)`, and
+  `mergeSlotStack` still went to `mergeStackToStorage` unconditionally, so **channel 1 was not fixed** — until
+  `1.5.19.2441` shipped on 2026-10-30.
 
-Reading only the ghost-slot handler is what produces the wrong conclusion "1.20.1 does not have this bug".
-
-## Upstream status as of 2026-10-30
-
-- `#517` and `#518` have had **no further maintainer reply since 2026-10-26**; both are still open.
-- The last commit on `1.21.x` is 2026-10-27 and changes linked-storage render state; it does **not** touch the
-  transfer handler.
-- The latest 1.21.1 release is still `1.5.19.2434` (published 2026-10-27) and **still reproduces** (`gain=1`,
-  repeat 5 → `+5`).
-- In other words: **as of today, no change has been made for either of the two channels.**
+Reading only the ghost-slot handler is what produced the wrong conclusion "1.20.1 does not have this bug".
 
 
 ## The short version
