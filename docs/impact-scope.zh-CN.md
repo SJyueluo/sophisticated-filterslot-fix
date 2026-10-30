@@ -8,7 +8,7 @@
 2026-10-30 发版并关闭了 `#517`，留言："I took a different approach to the fix but this is properly validated now"。
 
 **我们自己的检查工具在新版 `1.21.1-1.5.21.2439` 上给出的结论是 FIXED**：
-`tier1 BLOCKED`、`gain=0`、重复 5 次 `0`、`slotId=-1` 不再抛异常、普通整槽转移仍然 `moved=3`。
+`tier1 BLOCKED`、`gain=0`、重复 5 次 `0`、`slotId=-1` 不再抛异常、普通整槽转移仍然 `moved=3`。原始记录：`docs/evidence/s-1521-fixed.json`。
 
 | 状态 | 版本线 | 依据 |
 | --- | --- | --- |

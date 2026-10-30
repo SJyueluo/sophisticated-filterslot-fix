@@ -11,6 +11,8 @@ this is properly validated now"*.
 **Our own check tool reports FIXED on `1.21.1-1.5.21.2439`:** `tier1 BLOCKED`, `gain=0`, repeat 5 → `0`,
 `slotId=-1` no longer throws, and the normal whole-slot transfer still moves items (`moved=3`).
 
+Raw record of that run: `docs/evidence/s-1521-fixed.json`.
+
 | Status | Lines | Evidence |
 | --- | --- | --- |
 | **fixed** | 1.21.1 (`1.5.21.2439`) | measured FIXED at runtime, plus bytecode |
