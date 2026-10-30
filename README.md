@@ -1,5 +1,23 @@
 # Sophisticated Backpacks / Core — filter-slot transfer defect
 
+> ## Final update — 2026-10-31. This repository is archived and no longer maintained.
+>
+> It stays online as a record. No further verification, patches or replies will be produced here.
+>
+> **Final state**
+>
+> - Reported upstream on 2026-10-26 ([#517](https://github.com/P3pp3rF1y/SophisticatedCore/issues/517)) with
+>   reproduction steps, build and test results, and per-line code evidence.
+> - Fixed upstream on 2026-10-29 (commit `cf8aa31`), released 2026-10-30, on five lines:
+>   **1.21.1, 1.20.1, 26.1.2, 26.2, 26.3**. Verified here on `1.21.1-1.5.21.2439`: `tier1 BLOCKED`,
+>   `gain=0 repeat5=0`, `slotId=-1` no longer throws, normal transfer still `moved=3`.
+> - **Still unfixed on seven lines:** 1.18.2 and 1.19.2 (latest releases 2024-11-17), and
+>   1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11 (latest releases 2026-09-27).
+> - The second channel (bare ghost-slot write) was never fixed on 1.18.2 / 1.19.2.
+>
+> Everything needed to re-run the checks is in `docs/` — the reproduction, the per-line evidence with the exact
+> JAR hashes, and the timeline. Nothing in this repository depends on being maintained.
+
 Server-side check, server-side fix, and a locally-restricted client probe for a source-slot
 validation defect in Sophisticated Backpacks / Sophisticated Core.
 
