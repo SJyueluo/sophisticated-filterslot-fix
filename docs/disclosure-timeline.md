@@ -56,6 +56,6 @@ Not fixed: 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11 (latest releases 2026-09
   it is **not** fixed on 1.18.2, 1.19.2, or 1.21.4–1.21.11.
 - Channel 2 (bare ghost-slot write) is fixed from 1.20.1 onward and never applied to 1.18.2 / 1.19.2.
 - PR #518 is superseded by `cf8aa31`, which implements the same guard in the same place plus stricter payload
-  validation. It remains open and unmerged.
+  validation. The PR was closed on 2026-10-31 as redundant, not because the report was wrong.
 
 No claim is made here about intent, about any specific server, or about any player. This page is a record of what was reported, what was answered, and what was measured.
